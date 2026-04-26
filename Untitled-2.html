@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Glos App</title>
+    <style>
+        body {
+            padding-top: 80px;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            }
+.mainTitle {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    color: #1bf0c2;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 8px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.screen {
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    }
+
+    .grid {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .card {
+        background: #5173a3;
+        padding: 30px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 30px;
+        width: 150px;
+        transition: 0.2s;
+        font-weight: bold;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        background: #3b82f6;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    input {
+        padding:10px;
+        border-radius: 10px;
+        border: none;
+        width: 80%;
+        margin-top: 20px;
+    }
+
+    .hidden {
+        display:none;
+    }
+
+    .menuTitel {
+        font-size: 32px;
+    margin-bottom: 60px;
+    }
+.bigButton {
+    padding: 30px;
+    width: 260px;
+    border-radius: 18px;
+    font-size: 20px;
+    background: #2563eb;
+}
+
+    </style>
+    </head>
+    <body>
+<h1 class="mainTitle">Språk Specialisten</h1>
+
+        <div id="startScreen" class="screen">
+        <h2>Välj språk</h2>
+        <div class="grid">
+        <div class="card" onclick="chooseLanguage('fr')">Franska</div>
+        <div class="card" onclick="chooseLanguage('en')">Engelska</div>
+
+    </div>
+    </div>
+
+<div id="menuScreen" class="screen hidden">
+    <h1 id="menuTitle" class="menuTitel"></h1>
+    <button id="listButton" class="bigButton" onclick="openList()"></button>
+    <br>
+    <button onclick="backToStart()">⬅ Tillbaka</button>
+    </div>
+
+
+    <div id="appScreen" class="screen hidden">
+        <button onclick="goToMenu()">⬅ Meny</button>
+        <h2 id="title"></h2>
+
+        <p id="question"></p>
+        <input id="answer" placeholder="Skriv svar..." />
+        <br>
+        <button onclick="checkAnswer()">Svara</button>
+
+        <p id="feedback"></p>
+        </div>
+
+        <script>
+            let currentLanguage = '';
+            let words = [];
+            let currentIndex = 0;
+
+            const wordList = {
+                fr: [
+                    { sv: "hej", fr: "bonjour" },
+                    { sv: "tack", fr: "merci" },
+                    { sv: "Hej, jag heter Simon.", fr: "Bonjour, je m’appelle Simon" },
+{ sv: "Idag ska jag prata om Marocko.", fr: "Aujourd’hui, je vais parler du Maroc" },
+
+{ sv: "Marocko är ett land i Nordafrika.", fr: "Le Maroc est un pays en Afrique du Nord" },
+{ sv: "Huvudstaden är Rabat, men den största staden är Casablanca.", fr: "La capitale est Rabat, mais la plus grande ville est Casablanca" },
+{ sv: "Marocko har ungefär trettiosju miljoner invånare.", fr: "Le Maroc a environ trente-sept millions d’habitants" },
+{ sv: "Marocko är en monarki.", fr: "Le Maroc est une monarchie" },
+
+{ sv: "Språk och kultur", fr: "Langue et culture" },
+{ sv: "Man talar arabiska, amazigh och franska.", fr: "On parle arabe, amazigh et français" },
+{ sv: "Marocko är känt för sin mat, sin couscous och sina bakverk.", fr: "Le Maroc est célèbre pour sa cuisine, son couscous et ses gâteaux" },
+{ sv: "Maten är mycket färgglad.", fr: "La cuisine est très colorée" },
+
+{ sv: "Turism", fr: "Tourisme" },
+{ sv: "Det finns vackra berg, stränder och Saharaöknen ligger i söder.", fr: "Il y a de belles montagnes, des plages et le désert du Sahara est au sud" },
+{ sv: "Turister besöker ofta städerna Marrakech, Fès och Casablanca.", fr: "Les touristes visitent souvent les villes Marrakech, Fès et Casablanca" },
+{ sv: "Fès ligger i öst.", fr: "Fès est à l’est" },
+{ sv: "Marrakech ligger i söder.", fr: "Marrakech est au sud" },
+{ sv: "Casablanca ligger i väst.", fr: "Casablanca est à l’ouest" },
+{ sv: "De två största bergen i Marocko är Toubkal och M’Goun", fr: "Les deux plus grandes montagnes du Maroc sont le mont Toubkal et le mont M’Goun" },
+{ sv: "Det finns också fina stränder, till exempel Agadir och Essaouira.", fr: "Il y a aussi de belles plages, par exemple Agadir et Essaouira" },
+
+{ sv: "Grannländer och hav", fr: "Pays voisins et mer" },
+{ sv: "Marocko gränsar till Algeriet och Västsahara.", fr: "Le Maroc a des frontières avec l'Algérie et le Sahara occidental" },
+{ sv: "Marocko ligger nära Atlanten och Medelhavet.", fr: "Le Maroc est situé près de l’océan Atlantique et de la mer Méditerranée" },
+                ],
+                en: [
+                    { sv: "hej", en: "hello" },
+                    { sv: "tack", en: "thank you" },
+                    { sv: "Jag har en liten hund hemma.", en: "I have a small dog at home" },
+{ sv: "Hon gillar att läsa en bok varje dag.", en: "She likes to read a book every day" },
+{ sv: "Vi går till parken nu.", en: "We are going to the park now" },
+{ sv: "Han har en stor blå bil.", en: "He has a big blue car" },
+{ sv: "De äter lunch i skolan.", en: "They eat lunch at school" },
+{ sv: "Jag ser en fågel i trädet.", en: "I see a bird in the tree" },
+{ sv: "Min vän är väldigt snäll.", en: "My friend is very kind" },
+{ sv: "Solen är stark idag.", en: "The sun is bright today" },
+{ sv: "Jag vill lära mig engelska.", en: "I want to learn English" },
+{ sv: "Vi spelar fotboll efter skolan.", en: "We play football after school" },
+{ sv: "Jag gör alltid mina läxor på kvällen.", en: "I always do my homework in the evening" },
+{ sv: "Hon vill köpa en ny telefon.", en: "She wants to buy a new phone" },
+{ sv: "Vi är glada att se våra vänner igen.", en: "We are happy to see our friends again" },
+{ sv: "Han gillar att lyssna på musik på kvällen.", en: "He likes to listen to music at night" },
+{ sv: "De går till gymmet varje vecka.", en: "They go to the gym every week" },
+{ sv: "Jag behöver städa mitt rum idag.", en: "I need to clean my room today" },
+{ sv: "Hon läser en väldigt intressant berättelse.", en: "She is reading a very interesting story" },
+{ sv: "Vi reser till olika platser på sommaren.", en: "We travel to different places in the summer" },
+{ sv: "Han är bra på att spela gitarr.", en: "He is good at playing the guitar" },
+{ sv: "De pratar om sina planer.", en: "They are talking about their plans" },
+{ sv: "Jag försöker lära mig nya ord varje dag.", en: "I try to learn new words every day" },
+{ sv: "Hon hjälper sina föräldrar hemma.", en: "She helps her parents at home" },
+{ sv: "Vi väntar på bussen.", en: "We are waiting for the bus" },
+{ sv: "Han pluggar hårt inför provet.", en: "He studies hard for the test" },
+{ sv: "De tycker om att spendera tid tillsammans.", en: "They enjoy spending time together" },
+{ sv: "Jag känner mig trött efter en lång dag.", en: "I feel tired after a long day" },
+{ sv: "Hon har på sig en röd jacka.", en: "She wears a red jacket" },
+{ sv: "Vi lagar middag i köket.", en: "We cook dinner in the kitchen" },
+{ sv: "Han springer snabbt i loppet.", en: "He runs fast in the race" },
+{ sv: "De öppnar sina presenter försiktigt.", en: "They open their presents carefully" },
+{ sv: "Jag glömde mina nycklar hemma i morse.", en: "I forgot my keys at home this morning" },
+{ sv: "Hon letar efter sin väska.", en: "She is looking for her bag" },
+{ sv: "Vi behöver bli klara med arbetet snart.", en: "We need to finish this work soon" },
+{ sv: "Han hittade en plånbok på gatan.", en: "He found a wallet on the street" },
+{ sv: "De lär sig om historia i skolan.", en: "They are learning about history in class" },
+{ sv: "Hon är rädd för mörkret.", en: "She is afraid of the dark" },
+{ sv: "Vi måste vara försiktiga när vi går över vägen.", en: "We must be careful when we cross the road" },
+{ sv: "Han är exalterad inför resan.", en: "He is excited about the trip" },
+{ sv: "De bygger ett nytt hus.", en: "They are building a new house" },
+{ sv: "Jag tror att den här boken är väldigt intressant.", en: "I think this book is very interesting" },
+{ sv: "Hon säger alltid sanningen.", en: "She always tells the truth" },
+{ sv: "Vi försöker lösa problemet.", en: "We are trying to solve the problem" },
+{ sv: "Han vill bli lärare.", en: "He wants to become a teacher" },
+{ sv: "De besöker sina morföräldrar.", en: "They are visiting their grandparents" },
+{ sv: "Jag behöver förbättra min engelska.", en: "I need to improve my English skills" },
+{ sv: "Hon har på sig en vacker klänning.", en: "She is wearing a beautiful dress" },
+{ sv: "Vi pratar om våra framtidsplaner.", en: "We are talking about our future plans" },
+{ sv: "Han lär sig hur man lagar mat.", en: "He is learning how to cook" },
+{ sv: "De jobbar med ett grupparbete.", en: "They are working on a group project" },
+{ sv: "Jag glömmer ibland hur man stavar svåra ord.", en: "I sometimes forget how to spell difficult words" },
+{ sv: "Hon tränar engelska varje dag.", en: "She is practicing English every single day" },
+{ sv: "Vi arbetar tillsammans för att bli klara.", en: "We are working together to finish the task" },
+{ sv: "Han är intresserad av att lära sig nya språk.", en: "He is interested in learning new languages" },
+{ sv: "De förbereder sig för ett viktigt prov.", en: "They are preparing for an important test" },
+{ sv: "Jag vill bli bättre på att skriva.", en: "I want to become better at writing" },
+{ sv: "Hon förklarar reglerna tydligt.", en: "She is explaining the rules clearly" },
+{ sv: "Vi försöker hålla fokus.", en: "We are trying to stay focused" },
+{ sv: "Han ställer många frågor i klassen.", en: "He is asking many questions in class" },
+{ sv: "De förbättrar sina färdigheter över tid.", en: "They are improving their skills over time" },
+                ]
+            };
+
+            function chooseLanguage(lang) {
+                currentLanguage = lang;
+                words = wordList[lang];
+                currentIndex = 0;
+
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('menuScreen').classList.remove('hidden');
+
+                document.getElementById('menuTitle').innerText =
+                lang === 'fr' ? 'Franska' : 'Engelska';
+
+                document.getElementById('listButton').innerText = lang === 'fr' ? 'Franska blandad' : 'Engelska blandad';
+                }
+
+              function openList() {
+                document.getElementById('menuScreen').classList.add('hidden');
+                document.getElementById('appScreen').classList.remove('hidden');
+
+                document.getElementById('title').innerText = currentLanguage === 'fr' ? 'Franska glosor' : 'Engelska glosor';
+
+                showWord();
+              }
+
+    function backToStart() {
+        document.getElementById('menuScreen').classList.add('hidden');
+        document.getElementById('startScreen').classList.remove('hidden');
+    }
+
+    function goToMenu() {
+        document.getElementById('appScreen').classList.add('hidden');
+        document.getElementById('menuScreen').classList.remove('hidden')
+    }
+    
+
+                function showWord() {
+                    document.getElementById('feedback').innerText = '';
+                    document.getElementById('answer').value = '';
+
+                    const word = words[currentIndex];
+                    document.getElementById('question').innerText = word.sv;
+                }
+
+
+             function checkAnswer() {
+    const input = document.getElementById('answer').value;
+    const word = words[currentIndex];
+    
+    let correct = currentLanguage === 'fr' ? word.fr : word.en;
+
+   if (normalize(input) === normalize(correct)) {
+        document.getElementById('feedback').innerText = 'Rätt';
+
+        setTimeout(() => {
+            nextWord();
+        }, 500);
+
+    } else {
+        document.getElementById('feedback').innerText = 'Fel! Rätt svar: ' + correct;
+    }
+}
+
+
+function nextWord() {
+
+let newIndex;
+
+do{
+    newIndex = Math.floor(Math.random() * words.length);
+    } while (newIndex === currentIndex && words.length > 1);
+    currentIndex = newIndex;
+    showWord();
+}
+
+function normalize(text) {
+    return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+document.getElementById('answer').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        checkAnswer();
+    }
+});
+
+
+            </script>
+
+            </body>
+        </html>
